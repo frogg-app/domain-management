@@ -1,0 +1,172 @@
+// Domain Management - Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// User & Authentication
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  role          String    @default("user") // admin, user
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  providers     Provider[]
+  domains       Domain[]
+  certificates  Certificate[]
+  auditLogs     AuditLog[]
+}
+
+// Domain Registrar/DNS Provider Credentials
+model Provider {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String   // cloudflare, godaddy, crazydomains, etc.
+  displayName String   // User-friendly name
+  apiKey      String   // Encrypted
+  apiSecret   String?  // Encrypted (if needed)
+  accountId   String?  // Some providers need this
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  domains     Domain[]
+  
+  @@unique([userId, name])
+}
+
+// Domain Records
+model Domain {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerId      String?
+  provider        Provider? @relation(fields: [providerId], references: [id])
+  
+  name            String   // example.com
+  registrar       String?  // Where it was registered
+  expiresAt       DateTime?
+  autoRenew       Boolean  @default(false)
+  
+  // DNS settings
+  nameservers     String?  // JSON array
+  
+  // DynDNS
+  dynDnsEnabled   Boolean  @default(false)
+  dynDnsSubdomain String?
+  dynDnsToken     String?  // For DynDNS updates
+  dynDnsLastIp    String?
+  dynDnsLastUpdate DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  dnsRecords      DnsRecord[]
+  certificates    Certificate[]
+  proxyHosts      ProxyHost[]
+  
+  @@unique([userId, name])
+}
+
+// DNS Records
+model DnsRecord {
+  id        String   @id @default(cuid())
+  domainId  String
+  domain    Domain   @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  
+  type      String   // A, AAAA, CNAME, MX, TXT, etc.
+  name      String   // @ or subdomain
+  content   String   // IP, hostname, or value
+  ttl       Int      @default(3600)
+  priority  Int?     // For MX records
+  proxied   Boolean  @default(false) // Cloudflare proxy
+  
+  externalId String? // Provider's record ID for updates
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// SSL Certificates
+model Certificate {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domainId    String
+  domain      Domain   @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  
+  domains     String   // JSON array of domains covered
+  provider    String   @default("letsencrypt") // letsencrypt, zerossl, etc.
+  
+  certificate String?  // PEM encoded cert
+  privateKey  String?  // PEM encoded key (encrypted)
+  chain       String?  // PEM encoded chain
+  
+  issuedAt    DateTime?
+  expiresAt   DateTime?
+  autoRenew   Boolean  @default(true)
+  lastRenewAt DateTime?
+  
+  status      String   @default("pending") // pending, issued, expired, error
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Reverse Proxy Hosts
+model ProxyHost {
+  id              String   @id @default(cuid())
+  domainId        String
+  domain          Domain   @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  
+  subdomain       String   // www, api, etc. or @ for root
+  targetHost      String   // 192.168.1.x or hostname
+  targetPort      Int
+  
+  ssl             Boolean  @default(true)
+  forceSSL        Boolean  @default(true)
+  http2           Boolean  @default(true)
+  websockets      Boolean  @default(false)
+  
+  // For NPM integration
+  npmHostId       Int?
+  
+  isActive        Boolean  @default(true)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([domainId, subdomain])
+}
+
+// Audit Log
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  action    String   // create, update, delete, login, etc.
+  resource  String   // domain, dns, certificate, etc.
+  resourceId String?
+  details   String?  // JSON with additional info
+  ipAddress String?
+  
+  createdAt DateTime @default(now())
+}
+
+// App Settings
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
