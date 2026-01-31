@@ -19,7 +19,7 @@ Self-hosted domain management application with a clean, Ubiquiti-inspired interf
 docker-compose up -d
 ```
 
-Access at http://localhost:8070
+Access at http://localhost:5070
 
 ### Development
 
