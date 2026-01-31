@@ -7,10 +7,10 @@ import { CloudflareProvider } from '@/lib/providers/cloudflare';
 
 const providerSchema = z.object({
   name: z.enum(['cloudflare', 'godaddy', 'namecheap', 'crazydomains']),
-  displayName: z.string().min(1),
-  apiKey: z.string().min(1),
-  apiSecret: z.string().optional(),
-  accountId: z.string().optional(),
+  displayName: z.string().transform(s => s.trim()).pipe(z.string().min(1)),
+  apiKey: z.string().transform(s => s.trim()).pipe(z.string().min(1)),
+  apiSecret: z.string().transform(s => s.trim()).pipe(z.string().min(1)).optional(),
+  accountId: z.string().transform(s => s.trim()).pipe(z.string().min(1)).optional(),
 });
 
 export async function GET() {
