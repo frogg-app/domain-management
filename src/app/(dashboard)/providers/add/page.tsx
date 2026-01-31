@@ -43,12 +43,24 @@ export default function AddProviderPage() {
     setError('');
 
     const formData = new FormData(e.currentTarget);
-    const data = {
-      name: selectedProvider,
-      displayName: formData.get('displayName'),
-      apiKey: formData.get('apiKey'),
-      apiSecret: formData.get('apiSecret'),
+    const displayName = formData.get('displayName');
+    const apiKey = formData.get('apiKey');
+    const apiSecret = formData.get('apiSecret');
+
+    if (!displayName || !apiKey) {
+      setError('Display name and API key are required');
+      setLoading(false);
+      return;
+    }
+
+    const data: Record<string, string> = {
+      name: selectedProvider!,
+      displayName: displayName.toString(),
+      apiKey: apiKey.toString(),
     };
+    if (apiSecret) {
+      data.apiSecret = apiSecret.toString();
+    }
 
     try {
       const res = await fetch('/api/providers', {
