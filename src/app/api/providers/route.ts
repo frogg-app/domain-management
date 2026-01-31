@@ -46,12 +46,11 @@ export async function POST(request: Request) {
 
     // Verify credentials work
     if (data.name === 'cloudflare') {
-      const encryptedKey = encrypt(data.apiKey);
-      const cf = new CloudflareProvider(encryptedKey);
-      const valid = await cf.verifyToken();
-      if (!valid) {
+      const cf = CloudflareProvider.withRawToken(data.apiKey);
+      const result = await cf.verifyToken();
+      if (!result.valid) {
         return NextResponse.json(
-          { error: 'Invalid Cloudflare API token' },
+          { error: result.error || 'Invalid Cloudflare API token' },
           { status: 400 }
         );
       }

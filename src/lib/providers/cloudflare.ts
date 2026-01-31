@@ -31,6 +31,20 @@ export class CloudflareProvider {
     this.apiToken = decrypt(encryptedToken);
   }
 
+  /**
+   * Create a CloudflareProvider with a raw (unencrypted) token.
+   * Use this for token verification before storing.
+   */
+  static withRawToken(token: string): CloudflareProvider {
+    if (!token || typeof token !== 'string' || token.trim().length === 0) {
+      throw new Error('API token is required');
+    }
+    const provider = Object.create(CloudflareProvider.prototype);
+    provider.apiToken = token;
+    provider.baseUrl = 'https://api.cloudflare.com/client/v4';
+    return provider;
+  }
+
   private async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
@@ -41,7 +55,13 @@ export class CloudflareProvider {
       },
     });
 
-    const data: CloudflareResponse<T> = await response.json();
+    let data: CloudflareResponse<T>;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      const parseMessage = parseError instanceof Error ? parseError.message : 'Unknown parse error';
+      throw new Error(`Cloudflare API returned invalid JSON (status: ${response.status}): ${parseMessage}`);
+    }
 
     if (!data.success) {
       throw new Error(data.errors?.[0]?.message || 'Cloudflare API error');
@@ -50,12 +70,13 @@ export class CloudflareProvider {
     return data.result;
   }
 
-  async verifyToken(): Promise<boolean> {
+  async verifyToken(): Promise<{ valid: boolean; error?: string }> {
     try {
       await this.fetch('/user/tokens/verify');
-      return true;
-    } catch {
-      return false;
+      return { valid: true };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return { valid: false, error: errorMessage };
     }
   }
 
