@@ -59,3 +59,29 @@ ENCRYPTION_KEY="64-character-hex-string"
 - **Auth**: NextAuth.js v5
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
+
+## Screenshots
+
+To generate screenshots of all pages in the application:
+
+```bash
+npm run screenshots
+```
+
+This will:
+- Start the development server automatically
+- Navigate to all pages (both public and authenticated)
+- Capture full-page screenshots
+- Save them to the `screenshots/` directory
+
+The following pages are captured:
+- Home page
+- Login page
+- Register page
+- Dashboard
+- Domains management
+- DNS providers
+- Add provider
+- SSL certificates
+- Reverse proxy
+- Settings
