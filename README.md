@@ -62,26 +62,42 @@ ENCRYPTION_KEY="64-character-hex-string"
 
 ## Screenshots
 
-To generate screenshots of all pages in the application:
+### Home Page
+![Home Page](docs/screenshots/home.png)
+
+### Login Page
+![Login Page](docs/screenshots/login.png)
+
+### Register Page
+![Register Page](docs/screenshots/register.png)
+
+### Dashboard
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Domains Management
+![Domains Management](docs/screenshots/domains.png)
+
+### DNS Providers
+![DNS Providers](docs/screenshots/providers.png)
+
+### Add Provider
+![Add Provider](docs/screenshots/providers-add.png)
+
+### SSL Certificates
+![SSL Certificates](docs/screenshots/certificates.png)
+
+### Reverse Proxy
+![Reverse Proxy](docs/screenshots/proxy.png)
+
+### Settings
+![Settings](docs/screenshots/settings.png)
+
+---
+
+To generate updated screenshots:
 
 ```bash
 npm run screenshots
 ```
 
-This will:
-- Start the development server automatically
-- Navigate to all pages (both public and authenticated)
-- Capture full-page screenshots
-- Save them to the `screenshots/` directory
-
-The following pages are captured:
-- Home page
-- Login page
-- Register page
-- Dashboard
-- Domains management
-- DNS providers
-- Add provider
-- SSL certificates
-- Reverse proxy
-- Settings
+Screenshots are saved to the `screenshots/` directory.
