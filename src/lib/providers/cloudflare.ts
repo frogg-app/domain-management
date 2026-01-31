@@ -138,7 +138,7 @@ export class CloudflareProvider {
 }
 
 // Domain availability check (uses different API)
-export async function checkDomainAvailability(domain: string): Promise<{
+export async function checkDomainAvailability(_domain: string): Promise<{
   available: boolean;
   premium: boolean;
   price?: number;
