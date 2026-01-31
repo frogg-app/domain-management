@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { ServerCog, Globe, Shield, Network, Key, ArrowRight, Check } from "lucide-react";
+import { Globe, Shield, Network, Key, ArrowRight, Check } from "lucide-react";
+import { Logo, LogoIcon } from "@/components/logo";
 
 export default async function Home() {
   const session = await auth();
@@ -49,12 +50,7 @@ export default async function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-800/50 bg-gray-900/80 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
-                <ServerCog className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-semibold text-white">Domain Manager</span>
-            </div>
+            <Logo size="md" showText />
             <div className="flex items-center gap-4">
               <Link
                 href="/login"
@@ -182,7 +178,7 @@ export default async function Home() {
       <footer className="border-t border-gray-800/50 py-8 px-6">
         <div className="mx-auto max-w-6xl flex items-center justify-between">
           <div className="flex items-center gap-2 text-gray-500">
-            <ServerCog className="h-5 w-5" />
+            <LogoIcon className="h-5 w-5" color="#6b7280" />
             <span className="text-sm">Domain Manager</span>
           </div>
           <p className="text-sm text-gray-500">
