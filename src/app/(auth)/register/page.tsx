@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ServerCog } from 'lucide-react';
+import { Logo } from '@/components/logo';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -49,8 +49,8 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
       <Card className="w-full max-w-md" variant="elevated">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600">
-            <ServerCog className="h-8 w-8 text-white" />
+          <div className="mx-auto mb-4">
+            <Logo size="lg" />
           </div>
           <CardTitle className="text-2xl">Create account</CardTitle>
           <CardDescription>Get started with Domain Manager</CardDescription>
