@@ -22,9 +22,7 @@ test.describe('Page Screenshots', () => {
       test(`Screenshot: ${page.name}`, async ({ page: playwrightPage }) => {
         await playwrightPage.goto(page.path);
         await playwrightPage.waitForLoadState('networkidle');
-        
-        // Wait a bit for any animations to complete
-        await playwrightPage.waitForTimeout(500);
+        await playwrightPage.waitForLoadState('domcontentloaded');
         
         const screenshotPath = path.join('screenshots', `${page.name}.png`);
         await playwrightPage.screenshot({ 
@@ -38,19 +36,13 @@ test.describe('Page Screenshots', () => {
   });
 
   // Take screenshots of pages that require authentication
-  test.describe('Authenticated Pages', () => {
-    test.beforeEach(async ({ page }) => {
-      // Skip authentication for now - these will show the login redirect or error state
-      // In a real scenario, you would authenticate here first
-    });
-
+  // Note: These will capture the unauthenticated state (redirect/error) since auth is not configured
+  test.describe('Authenticated Pages (Unauthenticated State)', () => {
     for (const page of pages.filter(p => p.needsAuth)) {
       test(`Screenshot: ${page.name}`, async ({ page: playwrightPage }) => {
         await playwrightPage.goto(page.path);
         await playwrightPage.waitForLoadState('networkidle');
-        
-        // Wait a bit for any animations to complete
-        await playwrightPage.waitForTimeout(500);
+        await playwrightPage.waitForLoadState('domcontentloaded');
         
         const screenshotPath = path.join('screenshots', `${page.name}.png`);
         await playwrightPage.screenshot({ 
